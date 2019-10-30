@@ -1,0 +1,10 @@
+.pagination {
+  &__button {
+    border: 1px solid bisque;
+
+    &--disabled {
+      border: 1px solid red;
+    }
+  }
+}
+
