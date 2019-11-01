@@ -1,4 +1,4 @@
-import { DebugElement } from '@angular/core';
+import { Component, DebugElement } from '@angular/core';
 import { ListComponent } from './list.component';
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
@@ -6,20 +6,28 @@ import { environment } from '../../../../environments/environment';
 import { By } from '@angular/platform-browser';
 import { PokemonsResponse } from '../../models/pokemons-response';
 import { PokemonsService } from '../../services/pokemons.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Location } from '@angular/common';
 
 describe('ListComponent', () => {
   let component: ListComponent;
   let fixture: ComponentFixture<ListComponent>;
   let http: HttpTestingController;
   let url: string;
+  let location: Location;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: '', component: DummyComponent },
+          { path: ':id', component: DummyComponent }
+        ])
       ],
       declarations: [
-        ListComponent
+        ListComponent,
+        DummyComponent
       ],
       providers: [
         PokemonsService
@@ -33,6 +41,7 @@ describe('ListComponent', () => {
     http = TestBed.get(HttpTestingController);
     environment.apiRoot = 'www.example.com';
     url = environment.apiRoot + '/pokemon/';
+    location = TestBed.get(Location);
 
     fixture.detectChanges();
   });
@@ -63,7 +72,7 @@ describe('ListComponent', () => {
       });
 
       it('should show pokemon list', () => {
-        expect(pokemonList()).toEqual(namesOf(mockedRequest));
+        expect(textOf(pokemonList())).toEqual(namesOf(mockedRequest));
       });
 
       it('should show disabled "previous page" button', () => {
@@ -111,7 +120,7 @@ describe('ListComponent', () => {
           });
 
           it('should show a new list', () => {
-            expect(pokemonList()).toEqual(namesOf(mockedNextPageResponse));
+            expect(textOf(pokemonList())).toEqual(namesOf(mockedNextPageResponse));
           });
 
           it('should show enabled pagination buttons', () => {
@@ -202,9 +211,16 @@ describe('ListComponent', () => {
     return results;
   }
 
-  function pokemonList(): string[] {
+  function pokemonList(): DebugElement[] {
     return fixture.debugElement
-      .queryAll(By.css('.list__item'))
-      .map((element) => element.nativeElement.innerText);
+      .queryAll(By.css('.list__item'));
   }
+
 });
+
+@Component({
+  template: ''
+})
+class DummyComponent {
+}
+

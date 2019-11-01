@@ -17,22 +17,12 @@
     padding: $spacing-medium;
     border-radius: $border;
 
-    &:hover {
-      background-color: darken($ternary, 5%);
-    }
-
     &:nth-child(2n) {
       border-bottom: $border solid $primary;
-      &:hover {
-        border-bottom: $border solid darken($primary, 5%);
-      }
     }
 
     &:nth-child(2n-1) {
       border-bottom: $border solid $secondary;
-      &:hover {
-        border-bottom: $border solid darken($secondary, 5%);
-      }
     }
   }
 

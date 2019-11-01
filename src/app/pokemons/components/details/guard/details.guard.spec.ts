@@ -5,12 +5,15 @@ import { PokemonsService } from '../../../services/pokemons.service';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { environment } from '../../../../../environments/environment';
+import { NotificationService } from '../../../../core/notification/notification.service';
+import { MockNotificationService } from '../../../../core/notification/mock-notification.service';
 
 describe('DetailsResolver', () => {
   let guard: DetailsGuard;
   let http: HttpTestingController;
   let expectedUrl: string;
   let router: Router;
+  let notificationService: NotificationService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,15 +23,18 @@ describe('DetailsResolver', () => {
       ],
       providers: [
         DetailsGuard,
-        PokemonsService
+        PokemonsService,
+        { provide: NotificationService, useClass: MockNotificationService }
       ]
     });
     guard = TestBed.get(DetailsGuard);
     http = TestBed.get(HttpTestingController);
     router = TestBed.get(Router);
+    notificationService = TestBed.get(NotificationService);
     environment.apiRoot = 'foobar.com';
     expectedUrl = environment.apiRoot + '/pokemon/123';
     spyOn(router, 'navigate');
+    spyOn(notificationService, 'info');
   });
 
   describe('canActivate method', () => {
@@ -72,6 +78,10 @@ describe('DetailsResolver', () => {
 
       it('should navigate back', () => {
         expect(router.navigate).toHaveBeenCalledWith(['.']);
+      });
+
+      it('should call notification service', () => {
+        expect(notificationService.info).toHaveBeenCalled();
       });
     });
   });

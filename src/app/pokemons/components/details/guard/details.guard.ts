@@ -3,11 +3,13 @@ import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { PokemonsService } from '../../../services/pokemons.service';
 import { catchError, map, tap } from 'rxjs/operators';
+import { NotificationService } from '../../../../core/notification/notification.service';
 
 @Injectable()
 export class DetailsGuard implements CanActivate {
 
   constructor(private pokemonsService: PokemonsService,
+              private notificationService: NotificationService,
               private router: Router) {
   }
 
@@ -17,6 +19,7 @@ export class DetailsGuard implements CanActivate {
       map(() => true),
       catchError(() => {
         this.router.navigate(['.']);
+        this.notificationService.info(`ID ${route.params.id} does not exist.`, 'Pokemon not found');
         return of(false);
       })
     );
