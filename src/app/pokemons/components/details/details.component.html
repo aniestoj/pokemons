@@ -1,0 +1,34 @@
+<div class="pokemon">
+  <img class="pokemon__image" [src]="details?.sprites?.front_default" alt="img">
+  <span class="pokemon__name">{{details?.name}}</span>
+  <div class="pokemon__stats">
+    <div class="pokemon__stats__header">
+      <span>{{'Base'}}</span>
+      <span>{{'Effort'}}</span>
+      <span>{{'Name'}}</span>
+    </div>
+    <div class="pokemon__stats__list">
+      <div class="stat" *ngFor="let stat of details?.stats">
+        <span class="stat__base-stat">{{stat.base_stat}}</span>
+        <span class="stat__effort">{{stat.effort}}</span>
+        <span class="stat__name">{{stat.stat.name}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation">
+  <button class="button button__previous"
+          (click)="loadPrevious()"
+          [disabled]="previousDisabled"
+          [ngClass]="{'button--disabled': previousDisabled}">
+    {{'Previous'}}
+  </button>
+  <button class="button button__next"
+          [disabled]="nextDisabled"
+          [ngClass]="{'button--disabled': nextDisabled}"
+          (click)="loadNext()">
+    {{'Next'}}
+  </button>
+</div>
+

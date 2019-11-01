@@ -1,0 +1,33 @@
+@import "src/assets/styles/buttons";
+@import "src/assets/styles/variables";
+
+.search {
+  display: grid;
+  grid-auto-columns: auto;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  grid-template-areas:
+    "input search-btn"
+    "error error";
+  margin: 16px;
+  width: 300px;
+
+  &__input {
+    grid-area: input;
+    border: 1px solid white;
+    background: transparent;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+
+    &__error {
+      grid-area: error;
+      color: $text-primary;
+    }
+  }
+
+  &__button {
+    grid-area: search-btn;
+  }
+
+}

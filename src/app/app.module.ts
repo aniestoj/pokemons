@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-import { PokemonsModule } from './pokemons/pokemons.module';
 
 @NgModule({
   declarations: [
@@ -13,10 +12,10 @@ import { PokemonsModule } from './pokemons/pokemons.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
-    PokemonsModule
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

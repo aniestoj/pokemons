@@ -1,14 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { PokemonsComponent, PokemonsRequest } from './pokemons.component';
-import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
-import { By } from '@angular/platform-browser';
-import { environment } from '../../environments/environment';
 import { DebugElement } from '@angular/core';
+import { ListComponent } from './list.component';
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { environment } from '../../../../environments/environment';
+import { By } from '@angular/platform-browser';
+import { PokemonsResponse } from '../../models/pokemons-response';
+import { PokemonsService } from '../../services/pokemons.service';
 
-describe('PokemonsComponent', () => {
-  let component: PokemonsComponent;
-  let fixture: ComponentFixture<PokemonsComponent>;
+describe('ListComponent', () => {
+  let component: ListComponent;
+  let fixture: ComponentFixture<ListComponent>;
   let http: HttpTestingController;
   let url: string;
 
@@ -18,14 +19,16 @@ describe('PokemonsComponent', () => {
         HttpClientTestingModule
       ],
       declarations: [
-        PokemonsComponent
+        ListComponent
+      ],
+      providers: [
+        PokemonsService
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PokemonsComponent);
+    fixture = TestBed.createComponent(ListComponent);
     component = fixture.componentInstance;
     http = TestBed.get(HttpTestingController);
     environment.apiRoot = 'www.example.com';
@@ -38,10 +41,6 @@ describe('PokemonsComponent', () => {
     let testRequest: TestRequest;
     beforeEach(() => {
       testRequest = pokemonsRequestFor(0, 10);
-    });
-
-    it('should show skeleton loader', () => {
-      expect(skeleton()).toBeTruthy();
     });
 
     it('should not show pokemon list', () => {
@@ -57,18 +56,14 @@ describe('PokemonsComponent', () => {
     });
 
     describe('and results are returned', () => {
-      let mockedRequest: PokemonsRequest;
+      let mockedRequest: PokemonsResponse;
       beforeEach(() => {
-        mockedRequest = mockedRequestFor(0, 10);
+        mockedRequest = mockedResponseFor(0, 10);
         testRequest.flush(mockedRequest);
       });
 
       it('should show pokemon list', () => {
         expect(pokemonList()).toEqual(namesOf(mockedRequest));
-      });
-
-      it('should hide skeleton loader', () => {
-        expect(skeleton()).toBeNull();
       });
 
       it('should show disabled "previous page" button', () => {
@@ -83,7 +78,8 @@ describe('PokemonsComponent', () => {
         let requests: TestRequest[];
 
         beforeEach(() => {
-          requests = http.match((request) => request.url === url);
+          clickOnPreviousButton();
+          requests = http.match((request) => request.urlWithParams === mockedRequest.previous);
         });
 
         it('should not call endpoint for new records', () => {
@@ -92,76 +88,53 @@ describe('PokemonsComponent', () => {
       });
 
       describe('and user clicks on "next page" button', () => {
-        let nextPageRequest: TestRequest;
+        let nextPageTestRequest: TestRequest;
 
         beforeEach(() => {
-          nextPageRequest = pokemonsRequestFor(10, 10);
+          clickOnNextButton();
+          nextPageTestRequest = http.expectOne((request) => request.urlWithParams === mockedRequest.next);
         });
 
         it('should call endpoint for new records', () => {
-          expect(nextPageRequest.request.method).toBe('GET');
-        });
-
-        it('should show skeleton loader', () => {
-
+          expect(nextPageTestRequest.request.method).toBe('GET');
         });
 
         it('should show disabled pagination buttons', () => {
-
+          expect(textOf(disabledButtons())).toEqual(['Previous', 'Next']);
         });
 
         describe('and results are returned', () => {
+          let mockedNextPageResponse: PokemonsResponse;
           beforeEach(() => {
-
+            mockedNextPageResponse = mockedResponseFor(10, 10);
+            nextPageTestRequest.flush(mockedNextPageResponse);
           });
 
-          it('should show pokemon list', () => {
-
+          it('should show a new list', () => {
+            expect(pokemonList()).toEqual(namesOf(mockedNextPageResponse));
           });
 
           it('should show enabled pagination buttons', () => {
-
+            expect(textOf(enabledButtons())).toEqual(['Previous', 'Next']);
           });
         });
       });
     });
 
     describe('and "10th" page is returned', () => {
-      let mockedRequest: PokemonsRequest;
+      let mockedRequest: PokemonsResponse;
 
       beforeEach(() => {
-        mockedRequest = mockedRequestFor(90, 10);
+        mockedRequest = mockedResponseFor(90, 10);
         testRequest.flush(mockedRequest);
       });
 
-      it('should show disabled "previous page" button', () => {
-        expect(textOf(disabledButtons())).toEqual(['Next']);
+      it('should show enabled "previous page" button', () => {
+        expect(textOf(enabledButtons())).toEqual(['Previous']);
       });
 
       it('should show disabled "next page" button', () => {
-        expect(textOf(enabledButtons())).toEqual(['Previous']);
-      });
-    });
-
-    describe('and request fails', () => {
-      beforeEach(() => {
-
-      });
-
-      it('should not show skeleton loader', () => {
-
-      });
-
-      it('should not show pokemon list', () => {
-
-      });
-
-      it('should show error message', () => {
-
-      });
-
-      it('should show disabled pagination buttons', () => {
-
+        expect(textOf(disabledButtons())).toEqual(['Next']);
       });
     });
   });
@@ -169,18 +142,33 @@ describe('PokemonsComponent', () => {
   function enabledButtons() {
     return fixture
       .debugElement
-      .queryAll(By.css('.pagination__button'))
-      .filter(element => !element.nativeElement.classList.contains('pagination__button--disabled'));
-  }
-
-  function textOf(elements: DebugElement[]) {
-    return elements.map(element => element.nativeElement.innerText);
+      .queryAll(By.css('.button')).filter(element => !element.nativeElement.classList.contains('button--disabled'));
   }
 
   function disabledButtons() {
     return fixture
       .debugElement
-      .queryAll(By.css('.pagination__button--disabled'));
+      .queryAll(By.css('.button--disabled'));
+  }
+
+  function clickOnNextButton() {
+    return fixture
+      .debugElement
+      .query(By.css('.button__next'))
+      .nativeElement
+      .click();
+  }
+
+  function clickOnPreviousButton() {
+    return fixture
+      .debugElement
+      .query(By.css('.button__previous'))
+      .nativeElement
+      .click();
+  }
+
+  function textOf(elements: DebugElement[]) {
+    return elements.map(element => element.nativeElement.innerText);
   }
 
   function pokemonsRequestFor(offset: number, limit: number) {
@@ -191,16 +179,13 @@ describe('PokemonsComponent', () => {
     });
   }
 
-  function namesOf(request: PokemonsRequest) {
+  function namesOf(request: PokemonsResponse) {
     return request.results.map(result => result.name);
   }
 
-  function mockedRequestFor(offset: number, limit: number) {
+  function mockedResponseFor(offset: number, limit: number) {
     const previousUrl = offset === 0 ? null : `http://www.example.com/foobar?offset=${offset - limit}&limit=${limit}`;
     const nextUrl = `http://www.example.com/foobar?offset=${offset + limit}&limit=${limit}`;
-    console.log(previousUrl);
-    console.log(nextUrl);
-
     return {
       count: 123,
       previous: previousUrl,
@@ -219,11 +204,7 @@ describe('PokemonsComponent', () => {
 
   function pokemonList(): string[] {
     return fixture.debugElement
-      .queryAll(By.css('.pokemon__list__item'))
+      .queryAll(By.css('.list__item'))
       .map((element) => element.nativeElement.innerText);
-  }
-
-  function skeleton(): DebugElement {
-    return fixture.debugElement.query(By.css('.pokemon__skeleton'));
   }
 });

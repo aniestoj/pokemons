@@ -1,0 +1,20 @@
+<div class="list">
+  <div class="list__item" *ngFor="let pokemon of pokemonsResponse?.results">
+    <span>{{pokemon.name}}</span>
+  </div>
+
+  <div class="list__pagination">
+    <button class="button button__previous"
+            (click)="loadPreviousPage()"
+            [disabled]="previousDisabled"
+            [ngClass]="{'button--disabled': previousDisabled}">
+      {{'Previous'}}
+    </button>
+    <button class="button button__next"
+            (click)="loadNextPage()"
+            [disabled]="nextDisabled"
+            [ngClass]="{'button--disabled': nextDisabled}">
+      {{'Next'}}
+    </button>
+  </div>
+</div>

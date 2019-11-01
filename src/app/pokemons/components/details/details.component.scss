@@ -1,0 +1,89 @@
+@import "src/assets/styles/variables";
+@import "src/assets/styles/buttons";
+
+@mixin stat-grid {
+  display: grid;
+  grid-template-columns: 50px 50px auto;
+  grid-column-gap: $spacing-small;
+}
+
+@mixin pokemon-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-column-gap: $spacing-large;
+  grid-template-areas:
+    "name stats"
+    "image stats"
+    "image stats";
+  justify-content: space-around;
+  align-items: center;
+}
+
+:host {
+  display: grid;
+  justify-content: center;
+}
+
+.navigation {
+  margin: $spacing-large;
+  padding: $spacing-medium;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+}
+
+.pokemon {
+  @include pokemon-grid;
+  margin: $spacing-large;
+  padding: $spacing-medium;
+  border-radius: $border;
+  background: $ternary;
+  color: $text-primary;
+  max-width: 500px;
+
+  &__image {
+    grid-area: image;
+    padding: $spacing-large;
+  }
+
+  &__name {
+    grid-area: name;
+    font-size: $font-size-large;
+    color: $text-primary;
+    text-transform: capitalize;
+  }
+
+  &__stats {
+    grid-area: stats;
+
+    &__header {
+      font-weight: bold;
+      margin-bottom: $spacing-small;
+      @include stat-grid;
+    }
+
+    &__list {
+      display: grid;
+      grid-row-gap: $spacing-small;
+    }
+  }
+}
+
+.stat {
+  @include stat-grid;
+}
+
+@media(max-width: $breakpoint-small) {
+  .pokemon {
+    grid-template-columns: auto;
+    justify-items: center;
+    grid-template-areas:
+      "name"
+      "image"
+      "stats";
+
+    &__image {
+      padding: $spacing-small;
+    }
+  }
+}

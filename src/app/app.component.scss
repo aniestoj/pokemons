@@ -1,0 +1,22 @@
+@import "src/assets/styles/buttons";
+@import "src/assets/styles/variables";
+
+$accent: rgb(76, 42, 227);
+.header {
+  box-sizing: border-box;
+  padding: $spacing-large;
+  width: 100%;
+  background: $accent;
+  background: linear-gradient(90deg, rgba(76, 42, 227, 1) 0%, rgba(99, 84, 235, 1) 36%, rgba(243, 158, 249, 1) 100%);
+
+  &__label {
+    color: white;
+    font-size: $font-size-large;
+  }
+}
+
+.link {
+  margin-left: $spacing-large;
+}
+
+

@@ -1,0 +1,17 @@
+<form class="search" [formGroup]="formGroup" (ngSubmit)="search()">
+  <input class="search__input"
+         type="text"
+         name="id"
+         placeholder="Enter ID"
+         formControlName="id"
+         required>
+  <span class="search__input__error" *ngIf="!formGroup.controls['id'].valid && !formGroup.pristine">
+      {{'Incorrect value, please enter numeric ID.'}}
+  </span>
+  <button class="button button--small"
+          type="submit"
+          [disabled]="!formGroup.controls['id'].valid"
+          [ngClass]="{'button--disabled': !formGroup.controls['id'].valid}">
+    {{'Search'}}
+  </button>
+</form>

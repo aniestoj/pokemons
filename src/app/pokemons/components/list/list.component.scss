@@ -1,0 +1,47 @@
+@import "src/assets/styles/buttons";
+@import "src/assets/styles/variables";
+
+.list {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-row-gap: $spacing-small;
+  margin: $spacing-large;
+  width: 300px;
+
+  &__item {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: space-between;
+    background-color: $ternary;
+    color: $text-primary;
+    padding: $spacing-medium;
+    border-radius: $border;
+
+    &:hover {
+      background-color: darken($ternary, 5%);
+    }
+
+    &:nth-child(2n) {
+      border-bottom: $border solid $primary;
+      &:hover {
+        border-bottom: $border solid darken($primary, 5%);
+      }
+    }
+
+    &:nth-child(2n-1) {
+      border-bottom: $border solid $secondary;
+      &:hover {
+        border-bottom: $border solid darken($secondary, 5%);
+      }
+    }
+  }
+
+  &__pagination {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: $spacing-small;
+    justify-items: center;
+    align-items: center;
+    padding: $spacing-small 0;
+  }
+}
